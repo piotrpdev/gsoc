@@ -17,7 +17,15 @@ https://electronhq.notion.site/Electron-Google-Summer-of-Code-2024-Contributor-G
 
 # Electron 2024 Proposal: API History in Electron Documentation
 
-[*View this proposal nicely formatted as a GitHub Gist.*](https://gist.github.com/piotrpdev/9ed9bd7f0f3ab192a5ae58a35fbe03e7)
+## Preamble
+
+I want to thank [David Sanders (@dsanders11)](https://github.com/dsanders11) and
+the rest of the Electron team for answering my questions
+and taking the time to give me feedback on my draft proposals.
+It is very much appreciated.
+
+You can [click here](https://gist.github.com/piotrpdev/9ed9bd7f0f3ab192a5ae58a35fbe03e7)
+to view this proposal as a nicely formatted GitHub Gist.
 
 ## Contact Information
 
@@ -123,8 +131,10 @@ in order to convert the YAML API history into a Markdown table (or maybe a HTML 
 if the design calls for it) for the website. I will also modify the website CSS files
 to style this API history table nicely (see UI section below for details).
 
-Extraction and replacement of the YAML API history blocks will probably be done using
- simple regular expressions e.g. with [`String.prototype.replace()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace).
+The YAML API history blocks will be extracted and transformed using the parsed
+Markdown AST (probably generated from
+[`mdast-util-from-markdown`](https://github.com/syntax-tree/mdast-util-from-markdown)
+like in [`electron/lint-roller`](https://github.com/electron/lint-roller/blob/7ce895bd039cd3ee6d04a539e41e42298e4b775e/markdownlint-rules/emd002.mjs#L3)).
 
 Instead of the library that
 the Node.js doctool uses for parsing YAML ([`js-yaml`](https://github.com/nodeca/js-yaml)),
@@ -170,7 +180,7 @@ be migrated to the new system.
 #### Migration Guide
 
 Since existing API's have to be migrated to the new documentation system, I will
-create a migration guide (probably in `electron/docs/apihistoryguide.md`). It will
+create a migration guide (probably in `electron/docs/api-history-guide.md`). It will
 likely feature the typical steps of what a developer currently has to do when migrating
 an old Electron app to a new release:
 Read through the Electron [`breaking-changes.md`](https://github.com/electron/electron/blob/main/docs/breaking-changes.md)
