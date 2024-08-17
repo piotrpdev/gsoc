@@ -50,7 +50,7 @@ Links to all of my work can be found in the ["Deliverables"](#deliverables) sect
 ## Synopsis
 
 Over the course of the [Google Summer of Code (GSoC)](https://summerofcode.withgoogle.com/)
-program I implemented an API history feature for the Electron documentation and it's
+program I implemented an API history feature for the Electron documentation and its
 functions, classes, etc. in a similar fashion to the
 [Node.js documentation](https://nodejs.org/en/docs): by allowing the
 use of a simple but powerful YAML schema in the API documentation Markdown files
