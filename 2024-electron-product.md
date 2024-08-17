@@ -15,11 +15,6 @@ https://electronhq.notion.site/Electron-Google-Summer-of-Code-2024-Ideas-List-a1
 https://electronhq.notion.site/Electron-Google-Summer-of-Code-2024-Contributor-Guidance-f1f4de7a0d9a4664a96c8d4dd70cb208
 -->
 
-<!-- TODO:
-- Make sure diff links still work after e/e PR changes/merge
-- Dedupe long links
- -->
-
 # Electron 2024 Work Product: API History in Electron Documentation
 
 ## Preamble
@@ -54,9 +49,10 @@ Links to all of my work can be found in the ["Deliverables"](#deliverables) sect
 
 ## Synopsis
 
-Over the course of the GSoC program I implemented an API history feature for the
-Electron documentation and it's functions, classes, etc. in a similar fashion to
-the [Node.js documentation](https://nodejs.org/en/docs): by allowing the
+Over the course of the [Google Summer of Code (GSoC)](https://summerofcode.withgoogle.com/)
+program I implemented an API history feature for the Electron documentation and it's
+functions, classes, etc. in a similar fashion to the
+[Node.js documentation](https://nodejs.org/en/docs): by allowing the
 use of a simple but powerful YAML schema in the API documentation Markdown files
 and displaying it nicely on the Electron documentation website.
 
@@ -256,12 +252,12 @@ also increase the credibility of Electron and entice more people to use it.
   - Performs simple validation just in case incorrect API History manages to make
     it into the repo. Also strips the HTML comment tags that wrap API History blocks
     since [Docusaurus](https://docusaurus.io/) cannot parse them.
-  - Implemented/Used in: [electron/website#594][website]
+  - [x] Implemented/Used in: [electron/website#594][website]
 
 - `transformers/api-history.ts`
   - Script for converting YAML API history blocks in the Markdown documentation files
     to ~~Markdown/HTML~~ [React](https://react.dev/) tables (`ApiHistoryTable.tsx`).
-  - Implemented/Used in: [electron/website#594][website]
+  - [x] Implemented/Used in: [electron/website#594][website]
 
 - `ApiHistoryTable.tsx`
   - React table component used to display parsed API History data on the
@@ -269,7 +265,7 @@ also increase the credibility of Electron and entice more people to use it.
     - [x] Uses styling that follows the rest of the website's design.
     - [x] Responsive, accessible, and generally well written HTML, CSS, and JS.
     - [x] etc.
-  - Implemented/Used in: [electron/website#594][website]
+  - [x] Implemented/Used in: [electron/website#594][website]
 
 - `styleguide.md`
   - Usage/style guide section for new API history documentation system.
