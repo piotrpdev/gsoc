@@ -169,7 +169,7 @@ relevant to them:
 
 I originally planned on creating a simple GitHub Action / Bot that would replace
 placeholder version values. However, this was no longer necessary after we decided
-to derive those version numbers from PR URLs instead.
+to derive those version numbers from Pull Request URLs instead.
 
 #### UI and styling for Electron documentation website
 
@@ -269,17 +269,17 @@ also increase the credibility of Electron and entice more people to use it.
 
 - `styleguide.md`
   - Usage/style guide section for new API history documentation system.
-    - [x] Easy to understand.
-    - [x] Well written.
-    - [x] Includes examples.
+    - [x] Easy to understand
+    - [x] Well written
+    - [x] Includes examples
     - [x] etc.
   - [x] Implemented/Used in: [electron/electron#42982][electron]
 
 - `api-history-migration-guide.md`
   - Migration guide for new API history documentation system.
-    - [x] Easy to understand.
-    - [x] Well written.
-    - [x] Includes examples.
+    - [x] Easy to understand
+    - [x] Well written
+    - [x] Includes examples
     - [x] etc.
   - [x] Implemented/Used in: [electron/electron#42982][electron]
 
@@ -294,10 +294,10 @@ also increase the credibility of Electron and entice more people to use it.
 >   - [Issues](https://github.com/issues?q=sort%3Aupdated-desc+is%3Aissue+author%3A%40me+org%3Aelectron)
 >   - [Pull Requests](https://github.com/pulls?q=sort%3Aupdated-desc+is%3Apr+author%3A%40me+org%3Aelectron)
 
-| **No.** | **Week** | **Task** |
-| ------- | -------- | -------- |
-| 1 | May 27th - June 2nd | - Discussed project with mentors <br> - Familiarized myself with the codebase <br> - Researched existing approaches to problem e.g. in [Flask](https://flask.palletsprojects.com/en/3.0.x/api/) docs <br> - Researched potential libraries to use |
-| 2 | June 3rd - June 9th | - Implemented primitive version of proposal |
+| **No.** | **Week**                      | **Task** |
+| ------- | ----------------------------- | -------- |
+| 1       | May 27th - June 2nd           | - Discussed project with mentors <br> - Familiarized myself with the codebase <br> - Researched existing approaches to problem e.g. in [Flask](https://flask.palletsprojects.com/en/3.0.x/api/) docs <br> - Researched potential libraries to use |
+| 2       | June 3rd - June 9th           | - Implemented primitive version of proposal |
 | 3       | June 10th - June 16th         | - Researched custom YAML schema <br> - Started implementing YAML schema <br> - Asked mentors and developers of Electron for feedback |
 | 4       | June 17th - June 23rd         | - Added comprehensive schema validation to linting script <br> - Added comprehensive error messages to linting <br> - Added comprehensive code comments to linting |
 | 5       | June 24th - June 30th         | - Implemented Vitest tests for linting script <br> - Benchmarked the linting script <br> - Researched/implemented performance enhancements |
@@ -309,7 +309,7 @@ also increase the credibility of Electron and entice more people to use it.
 | 10      | July 29th - August 4th        | - Created migration guide for new API history documentation system |
 | 11      | August 5th - August 11th      | - Kept migrating API history and asked mentors for review |
 | **12**  | **August 12th - August 18th** | **- Wrote Final Report** |
-| 13      | August 19 - August 26 | Worked on last minute changes |
+| 13      | August 19th - August 26nd     | - Worked on last minute changes |
 
 [dsanders11]: https://github.com/dsanders11
 [erickzhao]: https://github.com/erickzhao
