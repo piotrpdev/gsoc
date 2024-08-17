@@ -1,7 +1,7 @@
 <!--
-This GSoC proposal may feature elements from the "Google Summer of Code Guides"
+This GSoC work product may feature elements from the "Google Summer of Code Guides"
 (<https://google.github.io/gsocguides/>) which are licensed under CC BY-SA 3.0.
-Accordingly, the rest of the proposal (made by Piotr Płaczek) is also under the
+Accordingly, the rest of the work product (made by Piotr Płaczek) is also under the
 same license. To view a copy of this license, visit <http://creativecommons.org/licenses/by-sa/3.0/>.
 -->
 
@@ -15,22 +15,28 @@ https://electronhq.notion.site/Electron-Google-Summer-of-Code-2024-Ideas-List-a1
 https://electronhq.notion.site/Electron-Google-Summer-of-Code-2024-Contributor-Guidance-f1f4de7a0d9a4664a96c8d4dd70cb208
 -->
 
-# Electron 2024 Proposal: API History in Electron Documentation
+<!-- TODO:
+- Make sure diff links still work after e/e PR changes/merge
+- Dedupe long links
+ -->
+
+# Electron 2024 Work Product: API History in Electron Documentation
 
 ## Preamble
 
-I want to thank [David Sanders (@dsanders11)](https://github.com/dsanders11) and
-the rest of the Electron team for answering my questions
-and taking the time to give me feedback on my draft proposals.
+I want to sincerely thank my mentors:
+
+- David Sanders [(@dsanders11)][dsanders11]
+- Keeley Hammond [(@VerteDinde)](https://github.com/VerteDinde)
+- Erick Zhao [(@erickzhao)][erickzhao]
+
+...and the rest of the Electron team for answering my questions
+and taking the time to give me feedback on my pull requests.
 It is very much appreciated.
 
-You can [click here](https://gist.github.com/piotrpdev/9ed9bd7f0f3ab192a5ae58a35fbe03e7)
-to view this proposal as a nicely formatted GitHub Gist.
+Links to all of my work can be found in the ["Deliverables"](#deliverables) section.
 
 ## Contact Information
-
-<!-- Putting your full name on the proposal is not enough. Provide full contact
-information, including your preferred name, email address, websites, etc. -->
 
 ### Personal Details
 
@@ -46,19 +52,11 @@ information, including your preferred name, email address, websites, etc. -->
 - **Twitter:** [@piotrpdev](https://twitter.com/piotrpdev)
 - **LinkedIn:** [piotrpdev](https://www.linkedin.com/in/piotrpdev/)
 
-### Working Hours
-
-- **Time Zone:** UTC+1 (Ireland)
-- **Working Hours:** 9:00 - 18:00 (flexible, just want to avoid burnout)
-
 ## Synopsis
 
-<!-- If the format allows, start your proposal with a short summary, designed to
-convince the reviewer to read the rest of the proposal. -->
-
-The Electron documentation currently doesn't feature API history for its functions,
-classes, etc. This proposal aims to implement the missing API history in a similar
-fashion to the [Node.js documentation](https://nodejs.org/en/docs): by allowing the
+Over the course of the GSoC program I implemented an API history feature for the
+Electron documentation and it's functions, classes, etc. in a similar fashion to
+the [Node.js documentation](https://nodejs.org/en/docs): by allowing the
 use of a simple but powerful YAML schema in the API documentation Markdown files
 and displaying it nicely on the Electron documentation website.
 
@@ -66,11 +64,38 @@ and displaying it nicely on the Electron documentation website.
 
 #### API history documentation system / YAML schema
 
-The API history for a function/class/etc. will be placed directly after the
+The API history for a function/class/etc. is now placed directly after the
 Markdown header for that item in the form of a YAML code block encapsulated by
 a HTML comment.
 
-~~~js
+~~~yaml
+#### `win.setTrafficLightPosition(position)` _macOS_
+
+<!--
+```YAML history
+added:
+  - pr-url: https://github.com/electron/electron/pull/22533
+changes:
+  - pr-url: https://github.com/electron/electron/pull/26789
+    description: "Made `trafficLightPosition` option work for `customButtonOnHover` window."
+deprecated:
+  - pr-url: https://github.com/electron/electron/pull/37094
+    breaking-changes-header: deprecated-browserwindowsettrafficlightpositionposition
+```
+-->
+
+* `position` [Point](structures/point.md)
+
+Set a custom position for the traffic light buttons. Can only be used with `titleBarStyle` set to `hidden`.
+~~~
+
+I believe using YAML like the Node.js docs do was the best approach because it
+is easy to read. The API history isn't extremely complicated and should ideally
+be as easy to write and read as possible.
+
+The final design shown above is actually significantly different to the one I proposed:
+
+~~~yaml
 <!--
 ```YAML history
 added: v10.0.0
@@ -84,311 +109,220 @@ changes:
 -->
 ~~~
 
-I believe using YAML like the Node.js docs do is the best approach because it
-is easy to read. The API history isn't extremely complicated and should ideally
-be as easy to write and read as possible. At first thought Markdown might seem
-like a plausible alternative, however I don't think it provides the information
-efficiency needed for the task. API history can be efficiently and clearly
-conveyed through key value pairs, a table, etc. while I believe Markdown is more
-suited for writing paragraphs and such.
+One large change is the removal of version numbers:
 
-*"Why not just place the YAML directly in the code block?"* - I believe my approach
-provides the best readability and ease of use. A developer can create a fenced
-code block with `YAML history` specified to get syntax highlighting (putting
-`history` after YAML doesn't mess up highlighting) and just comment it out with a
-shortcut once they're done. This also reduces the possibility of a formatting
-error messing something up (since indentation is so important in YAML).
+> "[...] There’s one somewhat significant change we’d like to call out about
+> the proposal, which came up during discussion when we were reviewing proposals.
+> [...]
+>
+> [we] decided that the approach with the least drawbacks would be to only
+> use PR URLs (the root PRs to main) instead of hardcoded version strings as in
+> the proposal.
+>
+> This can serve as a single source of truth which can then be used
+> to derive exact version numbers, and no further documentation changes on main
+> are necessary if the change is backported to other branches."
+>
+> — David Sanders [(@dsanders11)][dsanders11] via Slack
 
-I believe this is the best approach since it indicates the API history is metadata
-rather than a prop of the item or something similar. I think this also makes the
-documentation easier to read when rendered on GitHub (since comments are hidden)
-although the user can still switch to the code view and see the API history if
-they desire.
+We also didn't include removals in the API History, since when an API is removed
+from Electron, it is also removed from the documentation.
 
 #### JavaScript details
 
-![diagram1](https://i.imgur.com/vC5NOLA.png)
-
-I plan to create a new `@electron/docs-api-history-tools`
-NPM package that will contain scripts for extracting, validating/linting and converting
+I originally planned to create a new `@electron/docs-api-history-tools`
+NPM package that would contain scripts for extracting, validating/linting and converting
 the API history in the documentation files.
 
-I then plan to introduce a `lint:docs-history` script into the [`electron/electron`](https://github.com/electron/electron)
-`package.json` file and add it to the end of the `lint:docs` script. This will
-run a linting script provided by my package (probably re-exported by [`@electron/lint-roller`](https://github.com/electron/lint-roller/))
-and validate the YAML API history in the Markdown docs against a custom schema
-using the [`ajv`](https://github.com/ajv-validator/ajv) package. This schema will
-support additions, depreciations etc. and will help ensure consistency for API history
-across the docs.
+About a week before the coding period began, and after some discussion with my
+mentors, I realized that was probably unnecessary:
 
-If validating the entire docs at once is too slow, I will look at other approaches
-e.g. creating a GitHub Action that only validates the API history schema in pull
-requests.
+> "Hi everyone, I was thinking about the project after our huddle: Considering
+> that extraction logic will have to be handled differently in `e/website` and
+> `e/lint-roller` because of their dependencies, maybe there is no need for a
+> separate package for API history stuff?"
+>
+> | Proposed                  | Revised                 |
+> |:-------------------------:|:-----------------------:|
+> | ![proposed][js-proposed]  | ![revised][js-revised]  |
+>
+> — Piotr Płaczek (me) via Slack
 
-Furthermore, I will modify the [`scripts/pre-build.ts`](https://github.com/electron/website/blob/main/scripts/pre-build.ts)
-script in [`electron/website`](https://github.com/electron/website) to use my package
-in order to convert the YAML API history into a Markdown table (or maybe a HTML table
-if the design calls for it) for the website. I will also modify the website CSS files
-to style this API history table nicely (see UI section below for details).
+We ultimately decided to not go ahead with my original idea:
 
-The YAML API history blocks will be extracted and transformed using the parsed
-Markdown AST (probably generated from
-[`mdast-util-from-markdown`](https://github.com/syntax-tree/mdast-util-from-markdown)
-like in [`electron/lint-roller`](https://github.com/electron/lint-roller/blob/7ce895bd039cd3ee6d04a539e41e42298e4b775e/markdownlint-rules/emd002.mjs#L3)).
+> "@Piotr Płaczek that seems fine to me! I think we can always refactor out to a
+> separate module in a later iteration if we find that we need to share a lot of
+> code between the two implementations anyways :slightly_smiling_face:"
+>
+> — Erick Zhao ([@erickzhao][erickzhao]) via Slack
 
-Instead of the library that
-the Node.js doctool uses for parsing YAML ([`js-yaml`](https://github.com/nodeca/js-yaml)),
-I plan to use the [`yaml`](https://github.com/eemeli/yaml) package since it is
-regularly maintained and has no dependencies. [David Sanders (@dsanders11)](https://github.com/dsanders11)
-suggested this and also mentioned that the Electron team is moving new code to
-this package.
+Instead, we divided those various tools across the Electron repos that were most
+relevant to them:
 
-Of course, this package will have extensive tests written for it (probably using Jest).
+- `yaml-api-history-schema.json`
+  - -> `electron/electron` (`api-history.schema.json`)
+- `lint-yaml-api-history.ts`
+  - -> `electron/lint-roller` (`lint-markdown-api-history.ts`)
+- `extract-yaml-api-history.ts`
+  - -> `electron/website` (`preprocess-api-history.ts`)
+- `yaml-api-history-to-markdown.ts`
+  - -> `electron/website` (`transformers/api-history.ts`)
+  - -> `electron/website` (`ApiHistoryTable.tsx`)
 
 #### Placeholder Version Replacing GitHub Action / Bot
 
-I am planning on creating a simple GitHub Action/Bot that replaces placeholder
-version values. This is needed so a developer can add API history documentation along
-with their new feature, have it merged into a beta release, and when the official
-release comes out the API documentation for the feature lists that official version
-as the version the feature was added in.
-
-Usage of my package for this will likely not be necessary; running a simple file
-text find and replace will likely be sufficient ([that is what Node.js does](https://github.com/nodejs/node-core-utils/blob/b70e6368307156b4386129a30e07519aa5957eb3/lib/prepare_release.js#L427-L435)).
+I originally planned on creating a simple GitHub Action / Bot that would replace
+placeholder version values. However, this was no longer necessary after we decided
+to derive those version numbers from PR URLs instead.
 
 #### UI and styling for Electron documentation website
 
-I will display the parsed API history data in a nice-looking format on the documentation
-website. I plan on keeping it simple and readable like the Node.js documentation
-does, but maybe make it look a bit nicer / more modern since Node.js's one looks
-very basic. A responsive table will probably work best for most scenarios.
+I originally proposed a simple table to display the API History data:
 
-|          Design Prototype (Closed)        |           Design Prototype (Open)         |
-|:-----------------------------------------:|:-----------------------------------------:|
-| ![demo1](https://i.imgur.com/Mz1Wv1P.png) | ![demo2](https://i.imgur.com/svLg076.png) |
+| Design Prototype (Closed)           | Design Prototype (Open)           |
+|:-----------------------------------:|:---------------------------------:|
+| ![demo1][prototype-closed-proposed] | ![demo2][prototype-open-proposed] |
+
+This is what the final implemented design looks like:
+
+![demo3][open-implemented]
+
+Pretty much the same as the prototype. The most significant addition is the use
+of [SemVer](https://semver.org/) ranges, which were chosen to better communicate
+which versions a feature is present in.
 
 #### Usage/style Guide
 
-I will add a section to the
-[`electron/docs/styleguide.md`](https://github.com/electron/electron/blob/main/docs/styleguide.md)
-usage/style guide dedicated to writing API history documentation for new features.
-I will describe proper usages of the YAML schema in detail, provide typical/useful
-examples, etc. I'm aiming for it to make the process of documenting API history as
-easy as possible, especially considering that a lot of existing APIs will have to
-be migrated to the new system.
+I added a usage/style guide dedicated to writing API history documentation for
+new features. I described proper usages of the YAML schema in detail, provided
+typical/useful examples, etc.
 
 #### Migration Guide
 
-Since existing API's have to be migrated to the new documentation system, I will
-create a migration guide (probably in `electron/docs/api-history-guide.md`). It will
-likely feature the typical steps of what a developer currently has to do when migrating
-an old Electron app to a new release:
-Read through the Electron [`breaking-changes.md`](https://github.com/electron/electron/blob/main/docs/breaking-changes.md)
-file, browse the through the past [releases](https://github.com/electron/electron/releases),
-maybe look through old commits, etc. They will then be instructed to follow the
-usage/style guide to add API history documentation for each previously existing class/function/etc.
+Since existing API's have to be migrated to the new documentation system, I created
+a migration guide. It features the typical steps of what a developer has
+to do when migrating old APIs: looking through breaking changes, browsing through
+the past releases, maybe looking through old commits, etc.
+Then instructing the developer to follow the usage/style guide to add API history
+documentation for each previously existing class/function/etc.
 
-The (archived) [`electron-api-historian`](https://github.com/electron/electron-api-historian)
-project should be able to speed up the process of finding when APIs were first added
-(thanks [David Sanders (@dsanders11)](https://github.com/dsanders11) for the idea).
-However, finding when individual functions, parameters, etc. were changed is a lot
-more complicated.
-
-Sadly, I can't think of a way to automate this effectively. This would probably be
-a great task for an AI/ML engineer; however, I don't possess those skills and would
-be too afraid of accidentally introducing [hallucinations](https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence))
-into the API history. Even if automated the information would still probably have
+Sadly, I couldn't think of a way to automate this effectively. This would probably
+be a great task for an AI/ML engineer; however, I don't possess those skills and
+was too afraid of accidentally introducing [hallucinations](https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence))
+into the API history. Even if automated, the information would still probably have
 to be verified by a human in the end :/. This task will probably have to be done
 manually, on a file-by-file basis, [just like it was done for the
 Node.js documentation](https://github.com/nodejs/node/issues/6578).
 
-I will however try using [`git log -L :<funcname>:<file>`](https://stackoverflow.com/questions/4781405/git-how-do-i-view-the-change-history-of-a-method-function)
-along with some other Git tricks and see it if is useful.
-
 ## Benefits to Electron
-
-<!-- Don’t forget to make your case for a benefit to the organization, not just to
-yourself. Why would Google and your organization be proud to sponsor this work?
-How would open source or society as a whole benefit? What cool things would be
-demonstrated? -->
 
 I believe the addition of API history to the documentation will make the lives of
 developers using Electron a lot easier, especially ones attempting to migrate their
-existing app from a several year old Electron version. I think this feature would
+existing app from a several year old Electron version. I think this feature will
 also increase the credibility of Electron and entice more people to use it.
 
 ## Deliverables
 
-<!-- Include a brief, clear work breakdown structure with milestones and deadlines.
-Make sure to label deliverables as optional or required. You may want your plan to
-start by producing some kind of white paper, or planning the project in traditional
-Software Engineering style. It’s OK to include thinking time (“investigation”) in
-your work schedule. Deliverables should include investigation, coding and
-documentation. -->
-
 > [!NOTE]
 >
-> - All of the following are ***required*** deliverables. However, if some take
-> longer than expected I will most likely reduce the time migrating API's to the
-> new documentation system.
->
-> - The deadlines for the deliverables are included in the timeline.
+> - The deadlines for the deliverables are included in the ["Timeline"](#timeline)
+>   section.
 
-- `@electron/docs-api-history-tools` NPM package with:
-  - Scripts for parsing and linting/validating YAML API history written according
-to a custom YAML (technically JSON) schema.
+- `api-history.schema.json`
+  - A comprehensive YAML schema for documenting API history which includes support
+  for:
+    - [x] Additions
+    - [x] Depreciations
+    - [ ] ~~Removals~~
+    - [x] Changes
+    - [x] Links to relevant pull requests
+    - [x] Backports
+    - [x] etc.
+  - [x] Proposed in: [electron/rfc#6][rfc]
+  - [x] Implemented/Used in: [electron/electron#42982][electron]
+  - [x] Used in: [electron/website#594][website]
+
+- `lint-markdown-api-history.ts`
+  - Script for linting YAML API history written according to a custom YAML
+    (technically JSON) schema.
+    - [x] Useful error messages
+    - [x] Comprehensive documentation / code comments
+    - [x] Extensive ~~Jest~~ Vitest tests
+    - [x] Good performance
+  - [x] Implemented in: [electron/lint-roller#73][lint-roller]
+  - [x] Used in: [electron/electron#42982][electron]
+
+- `preprocess-api-history.ts`
+  - Performs simple validation just in case incorrect API History manages to make
+    it into the repo. Also strips the HTML comment tags that wrap API History blocks
+    since [Docusaurus](https://docusaurus.io/) cannot parse them.
+  - Implemented/Used in: [electron/website#594][website]
+
+- `transformers/api-history.ts`
   - Script for converting YAML API history blocks in the Markdown documentation files
-to Markdown/HTML tables.
-  - Useful error messages
-  - Comprehensive documentation / code comments
-  - Extensive Jest tests
-  - Good performance
-  - Code following best coding practices, Electron linting/style guide, etc.
+    to ~~Markdown/HTML~~ [React](https://react.dev/) tables (`ApiHistoryTable.tsx`).
+  - Implemented/Used in: [electron/website#594][website]
 
-- A comprehensive YAML schema for documenting API history which includes support
-for:
-  - Additions
-  - Depreciations
-  - Removals
-  - Changes
-  - Links to relevant pull requests
-  - Backports
-  - etc.
+- `ApiHistoryTable.tsx`
+  - React table component used to display parsed API History data on the
+    documentation website.
+    - [x] Uses styling that follows the rest of the website's design.
+    - [x] Responsive, accessible, and generally well written HTML, CSS, and JS.
+    - [x] etc.
+  - Implemented/Used in: [electron/website#594][website]
 
-- A GitHub Action/Bot that will replace placeholder version values in the API history
-documentation.
-  - This is needed so a developer can add API history documentation along with their
-    new feature, have it merged into a beta release, and when the official release
-    comes out the API documentation for the feature lists that official version as
-    the version the feature was added in.
+- `styleguide.md`
+  - Usage/style guide section for new API history documentation system.
+    - [x] Easy to understand.
+    - [x] Well written.
+    - [x] Includes examples.
+    - [x] etc.
+  - [x] Implemented/Used in: [electron/electron#42982][electron]
 
-- Nice UI and styling for API history on the Electron documentation website.
-  - Styling that follows the rest of the website's design.
-  - Responsive, accessible, and generally well written HTML, CSS, and JS.
-  - etc.
-
-- Usage/style guide section for new API history documentation system that is:
-  - Easy to understand.
-  - Well written.
-  - Includes examples.
-  - etc.
-
-- Migration guide for new API history documentation system that is:
-  - Easy to understand.
-  - Well written.
-  - Includes examples.
-  - etc.
+- `api-history-migration-guide.md`
+  - Migration guide for new API history documentation system.
+    - [x] Easy to understand.
+    - [x] Well written.
+    - [x] Includes examples.
+    - [x] etc.
+  - [x] Implemented/Used in: [electron/electron#42982][electron]
 
 ## Timeline
 
-<!-- Include a brief, clear work breakdown structure with milestones and deadlines.
-Make sure to label deliverables as optional or required. You may want your plan to
-start by producing some kind of white paper, or planning the project in traditional
-Software Engineering style. It’s OK to include thinking time (“investigation”) in
-your work schedule. Deliverables should include investigation, coding and
-documentation. -->
-
 > [!NOTE]
 >
-> - My university's exam period finishes on the 17th of May and the next term
-> starts in September. With this in mind, I should be able to fully dedicate
-> my time to implementing the proposal without issues.
+> - My university's exam period finished on the 17th of May and the next term
+> started in September. With this in mind, I was able to fully dedicate my time
+> to implementing the proposal without issues.
+> - You can view all of the Pull Requests / Issues I worked on here:
+>   - [Issues](https://github.com/issues?q=sort%3Aupdated-desc+is%3Aissue+author%3A%40me+org%3Aelectron)
+>   - [Pull Requests](https://github.com/pulls?q=sort%3Aupdated-desc+is%3Apr+author%3A%40me+org%3Aelectron)
 
 | **No.** | **Week** | **Task** |
 | ------- | -------- | -------- |
-| 1 | May 27th - June 2nd | - Discuss project with mentors <br> - Familiarize myself with the codebase <br> - Research existing approaches to problem e.g. in [Flask](https://flask.palletsprojects.com/en/3.0.x/api/) docs <br> - Research potential libraries to use |
-| 2 | June 3rd - June 9th | - Implement primitive version of `@electron/docs-api-history-tools` <br> - Create GitHub Action to automatically publish package to NPM on new release |
-| 3       | June 10th - June 16th         | - Research custom YAML schema <br> - Ask mentors and developers of Electron for feedback <br> - Finalize schema |
-| 4       | June 17th - June 23rd         | - Add comprehensive input/schema validation <br> - Add comprehensive error messages <br> - Add comprehensive documentation / code comments |
-| 5       | June 24th - June 30th         | - Implement Jest tests <br> - Benchmark the package <br> - Research/implement performance enhancements |
-|         | **June 30th**                 | **- Midterm evaluation / Reflect and adjust plans** |
-| 6       | July 1st - July 7th           | - Create GitHub Action/Bot to replace placeholder version values on new release |
-| 7       | July 8th - July 14th          | - Add UI and styling for API history to the Electron docs website |
-| 8       | July 15th - July 21st         | - Create usage/style guide section for new API history documentation system |
-| 9       | July 22nd - July 28th         | - Create migration guide for new API history documentation system |
-| 10      | July 29th - August 4th        | - Start migrating API history to docs using new system <br> - Get `lint:docs-history` and `electron/website` `pre-build.ts` changes merged |
-| 11      | August 5th - August 11th      | - Keep migrating API history and ask mentors for review |
-| **12**  | **August 12th - August 18th** | **- Write Final Report** |
+| 1 | May 27th - June 2nd | - Discussed project with mentors <br> - Familiarized myself with the codebase <br> - Researched existing approaches to problem e.g. in [Flask](https://flask.palletsprojects.com/en/3.0.x/api/) docs <br> - Researched potential libraries to use |
+| 2 | June 3rd - June 9th | - Implemented primitive version of proposal |
+| 3       | June 10th - June 16th         | - Researched custom YAML schema <br> - Started implementing YAML schema <br> - Asked mentors and developers of Electron for feedback |
+| 4       | June 17th - June 23rd         | - Added comprehensive schema validation to linting script <br> - Added comprehensive error messages to linting <br> - Added comprehensive code comments to linting |
+| 5       | June 24th - June 30th         | - Implemented Vitest tests for linting script <br> - Benchmarked the linting script <br> - Researched/implemented performance enhancements |
+|         | **June 30th**                 | **- Midterm evaluation / Reflected and adjusted plans** |
+| 6       | July 1st - July 7th           | - Kept adding features to linting script |
+| 7       | July 8th - July 14th          | - Kept working on UI and styling for API History table <br> - Finalized schema |
+| 8       | July 15th - July 21st         | - Created usage/style guide section for new API history documentation system |
+| 9       | July 22nd - July 28th         | - Start migrating API history to docs using new system |
+| 10      | July 29th - August 4th        | - Created migration guide for new API history documentation system |
+| 11      | August 5th - August 11th      | - Kept migrating API history and asked mentors for review |
+| **12**  | **August 12th - August 18th** | **- Wrote Final Report** |
+| 13      | August 19 - August 26 | Worked on last minute changes |
 
-## Related Work
-
-<!-- You should understand and communicate other people’s work that may be related
-to your own. Do your research, and make sure you understand how the project you are
-proposing fits into the target organization. Be sure to explain how the proposed
-work is different from similar related work. -->
-
-As suggested in the original idea, I plan to implement an API history documentation
-system similar to the one used in the Node.js documentation ([Node.js doctool](https://github.com/nodejs/node/tree/main/tools/doc),
-[example](https://github.com/nodejs/node/blob/5117c6c9e7418eecd6e73145a1f8339e18db323f/doc/api/fs.md?plain=1#L655-L662)).
-After researching it and looking at how it works, I really like it and think it would
-be a good fit for the Electron documentation.
-
-I like the way [Flask](https://github.com/pallets/flask/tree/main/docs) displays
-API changes in their API documentation as well, however they use [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
-and include all of the historical API changes for a function in the source code
-itself, which I don't really like.
-
-I plan to take inspiration from various API history examples out there.
-
-<!-- The following image contains screenshots from various open-source
-projects including: Node.js, Flask, Django, Python, React, MDN Web Docs
-and PSPDFKit. I do not own or hold copyright over any of the content
-in the image, all rights belong to their respective owners. -->
-
-![inspiration](https://i.imgur.com/waKV6LS.png)
-
-## Biographical Information
-
-<!-- Keep your personal info brief. Be sure to communicate personal experiences
-and skills that might be relevant to the project. Summarize your education, work,
-and open source experience. List your skills and give evidence of your qualifications.
-Convince your organization that you can do the work. Any published work, successful
-open source projects and the like should definitely be mentioned. -->
-
-### General
-
-- I am 20 years old
-- I was born in Poland
-- I am currently living in Waterford, Ireland
-- I started programming back in 2018 with C++
-- My first real project was a Python web scraper I made in 2020
-
-### Work
-
-- I did a 7 month work placement at Red Hat in 2023 as part of my university course.
-I mainly worked on an AI/ML model delivery pipeline running on [Red Hat OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift)
-using [Tekton](https://tekton.dev/). I also wrote a Medium article detailing
-my work, [here is a link](https://medium.com/piotr-p%C5%82aczeks-red-hat-internship-experience/bringing-ai-to-the-edge-839f96cc6756).
-
-### Education
-
-- **University:** South East Technological University
-- **Degree:** BSc (Hons.) in Software Systems Development
-- **Expected Graduation:** May, 2025
-
-### Related Open-Source Work
-
-Some of my open-source work that showcases I have the prior experience necessary
-to implement the proposal:
-
-- [`electron/electron (#41642)`](https://github.com/electron/electron/pull/41642):
-A simple bugfix PR I made.
-  - Set-up [`electron/build-tools`](https://github.com/electron/build-tools) on a
-[Hetzner](https://www.hetzner.com/) VPS.
-  - Ran the build, linting, and test scripts.
-  - Created a PR, implemented suggested changes and rebased before merge.
-
-- [`piotrpdev/cao-calculator`](https://github.com/piotrpdev/cao-calculator): Android
-app for calculating university entrance points, built with React Native and TypeScript.
-
-- [`piotrpdev/WIT-Timetable-Generator`](https://github.com/piotrpdev/WIT-Timetable-Generator):
-Web scraper for my university's timetable page, built with JavaScript.
-
-- [`piotrpdev/resume`](https://github.com/piotrpdev/resume): My resume, built with
-React and JavaScript.
-
-### Interests
-
-- Music (performance, composition, listening, etc.)
-- Electronics (Arduino, Raspberry Pi, ESP32, etc.)
-- Gaming (Arma 3, Dark Souls, Pokémon, etc.)
+[dsanders11]: https://github.com/dsanders11
+[erickzhao]: https://github.com/erickzhao
+[js-proposed]: https://github.com/user-attachments/assets/3ec6c87b-1569-443b-8b63-eb20ee4fd96b
+[js-revised]: https://github.com/user-attachments/assets/321745a4-ad09-4717-94cc-7b3e08a85d3c
+[prototype-closed-proposed]: https://github.com/user-attachments/assets/a1c329d0-9f6b-4079-94d3-f9ff5b80c9ea
+[prototype-open-proposed]: https://github.com/user-attachments/assets/f1556d89-8fc8-485f-995c-1edaf8ee1413
+[open-implemented]: https://github.com/user-attachments/assets/a8ceb931-ac10-46bc-b747-bf8fd97c839f
+[electron]: https://github.com/electron/electron/pull/42982
+[website]: https://github.com/electron/website/pull/594
+[lint-roller]: https://github.com/electron/lint-roller/pull/73
+[rfc]: https://github.com/electron/rfcs/pull/6
